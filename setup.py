@@ -18,13 +18,10 @@ setup(
     maintainer_email='das-dev-dt@mail.ru',
     description='TODO: Package description',
     license='TODO: License declaration',
-    extras_require={
-        'test': [
-            'pytest',
-        ],
-    },
+
     entry_points={
         'console_scripts': [
+            'pose_saver_node = dasdynamics_navigation_pose_control.pose_saver_node:main'
         ],
     },
 )
