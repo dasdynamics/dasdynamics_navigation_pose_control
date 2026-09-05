@@ -21,7 +21,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'pose_saver_node = dasdynamics_navigation_pose_control.pose_saver_node:main'
+            'pose_save_node = dasdynamics_navigation_pose_control.pose_save_node:main'
         ],
     },
 )
