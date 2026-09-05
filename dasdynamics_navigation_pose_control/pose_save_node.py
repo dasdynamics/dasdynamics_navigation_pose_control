@@ -5,6 +5,7 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import PoseWithCovarianceStamped
+#from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 
 
 class PoseSaveNode (Node):
@@ -16,9 +17,10 @@ class PoseSaveNode (Node):
 
 
         # Файлы с точками
-        self.waypoints_file = os.path.expanduser('~/ros2_smart_box_ws/waypoints.yaml')
+        self.waypoints_file = os.path.expanduser('~/ros2_smartbox_ws/waypoints.yaml')
         self.waypoints = self.load_waypoints()
 
+        #self.navigator = BasicNavigator()
 
 
         # Текущая поза
@@ -39,6 +41,12 @@ class PoseSaveNode (Node):
             10, 
         )
 
+        self.goal_pub = self.create_publisher(
+            PoseStamped,
+            '/goal_pose',
+            10,
+        )
+
         self.get_logger().info(f'Pose saver node started. Listing on {self.command_topic_name}')
 
 
@@ -52,6 +60,8 @@ class PoseSaveNode (Node):
 
         if cmd.startswith('save'):
             self.handle_save(cmd[5:])
+        elif cmd.startswith('go:'):
+            self.handle_go(cmd[3:])
         else:
             self.get_logger().info(f'Unknown command: {cmd}. Use "save:<name>"')
 
@@ -110,23 +120,14 @@ class PoseSaveNode (Node):
         goal.pose.position.x = wp['x']
         goal.pose.position.y = wp['y']
         goal.pose.position.z = wp['z']
-        goal.pose.orientation.x = wp['qx']
-        goal.pose.orientation.y = wp['qy']
-        goal.pose.orientation.z = wp['qz']
-        goal.pose.orientation.w = wp['qw']
+        goal.pose.orientation.x = wp['ox']
+        goal.pose.orientation.y = wp['oy']
+        goal.pose.orientation.z = wp['oz']
+        goal.pose.orientation.w = wp['ow']
 
         self.get_logger().info(f'Navigating to "{name}"')
-        self.navigator.goToPose(goal)
+        self.goal_pub.publish(goal)
 
-        # Ждём завершения задачи
-        while rclpy.ok() and not self.navigator.isTaskComplete():
-            pass
-
-        result = self.navigator.getResult()
-        if result == TaskResult.SUCCEEDED:
-            self.get_logger().info(f'Navigated to "{name}" successfully')
-        else:
-            self.get_logger().error(f'Navigation to "{name}" failed (result={result})')
 
 
 def main():
