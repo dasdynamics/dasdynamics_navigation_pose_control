@@ -1,8 +1,10 @@
 import os
 from glob import glob
-from setuptools import find_packages, setup
+from setuptools import setup
 
-package_name = 'dasdynamics_navigation_pose_control'
+
+package_name = 'dasdynamics_navigation'
+
 
 setup(
     name=package_name,
@@ -12,21 +14,22 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+
         (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
         (os.path.join('share', package_name, 'config'), glob('config/*.yaml')),
         (os.path.join('share', package_name, 'rviz'), glob('rviz/*.rviz')),
     ],
     package_data={'': ['py.typed']},
-    install_requires=['setuptools'],
-    zip_safe=True,
+    install_requires=[],
+    zip_safe=False,
     maintainer='dmitry-savin-dev',
-    maintainer_email='das-dev-dt@mail.ru',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    maintainer_email='das-dev-md@mail.ru',
+    description='Launch files for navigation and a waypoint control node',
+    license='Apache-2.0',
 
     entry_points={
         'console_scripts': [
-            'pose_save_node = dasdynamics_navigation_pose_control.pose_save_node:main'
+            'waypoints_control_node = dasdynamics_navigation.waypoints_control_node:main'
         ],
     },
 )

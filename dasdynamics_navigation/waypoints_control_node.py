@@ -5,88 +5,83 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import PoseWithCovarianceStamped
-#from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 
 
-class PoseSaveNode (Node):
+class WaypointsControlNode (Node):
     def __init__(self):
-        super().__init__("pose_save_node")
+        super().__init__("waypoints_control_node")
 
-        # Параметры окружения
-        self.command_topic_name = 'command'
+        self.pose_topic_name = '/pose'
+        self.user_command_topic_name = '/user_commands'
+        self.goal_pose_topic_name = '/goal_pose'
 
+        self.save_waypoints_command = 'save_waypoint'
+        self.go_to_waypoint_command = 'go_to_waypoint:'
 
-        # Файлы с точками
-        self.waypoints_file = os.path.expanduser('~/ros2_smartbox_ws/waypoints.yaml')
+        self.waypoints_file_path = os.path.expanduser('~/waypoints.yaml')
         self.waypoints = self.load_waypoints()
 
-        #self.navigator = BasicNavigator()
-
-
-        # Текущая поза
         self.current_pose = None
-
 
         self.pose_subscription = self.create_subscription(
             PoseWithCovarianceStamped,
-            '/pose',
+            self.pose_topic_name,
             self.pose_callback,
             10, 
         )
 
         self.pose_subscription = self.create_subscription(
             String,
-            'command',
-            self.command_callback,
+            self.user_command_topic_name,
+            self.user_command_callback,
             10, 
         )
 
         self.goal_pub = self.create_publisher(
             PoseStamped,
-            '/goal_pose',
+            self.goal_pose_topic_name,
             10,
         )
 
-        self.get_logger().info(f'Pose saver node started. Listing on {self.command_topic_name}')
+        self.get_logger().info(f'WaypointsControlNode started. Listing on {self.user_command_topic_name}')
 
 
-    # Вызываемые функции
     def pose_callback(self, msg:PoseWithCovarianceStamped):
         self.current_pose = msg.pose
 
-    def command_callback(self, msg:String):
+
+    def user_command_callback(self, msg:String):
         cmd = msg.data.strip()
         self.get_logger().info(f'Received command: {cmd}')
 
-        if cmd.startswith('save'):
-            self.handle_save(cmd[5:])
-        elif cmd.startswith('go:'):
-            self.handle_go(cmd[3:])
+        if cmd.startswith(self.save_waypoints_command):
+            self.save_waypoints(cmd[14:])
+        elif cmd.startswith(self.go_to_waypoint_command):
+            self.go_to_waypoint(cmd[15:])
         else:
-            self.get_logger().info(f'Unknown command: {cmd}. Use "save:<name>"')
+            self.get_logger().warning(f'Unknown command: {cmd}. Use "save_waypoint:<name>"')
 
 
-    # Логика
     def load_waypoints(self):
-        if os.path.exists(self.waypoints_file):
-            with open(self.waypoints_file, 'r') as file:
+        if os.path.exists(self.waypoints_file_path):
+            with open(self.waypoints_file_path, 'r') as file:
                 data = yaml.safe_load(file) or {}
             return data
         return {}
 
 
-    def save_waypoints(self):
-        with open(self.waypoints_file, 'w') as file:
+    def update_waypoints_file(self):
+        with open(self.waypoints_file_path, 'w') as file:
             yaml.dump(self.waypoints, file, default_flow_style=False)
 
-    def handle_save(self, name:str):
+    def save_waypoints(self, name:str):
         name = name.strip()
         if not name:
-            self.get_logger().info('Save command without name. Use "save:<name>"')
+            self.get_logger().warning('Save command without name. Use "save_waypoint:<name>"')
             return 
 
         if self.current_pose is None:
-            self.get_logger().info('No current pose')
+            self.get_logger().warning('No current pose')
             return
 
         pose = self.current_pose.pose
@@ -99,18 +94,18 @@ class PoseSaveNode (Node):
             'oz': pose.orientation.z,
             'ow': pose.orientation.w,
         }
-        self.save_waypoints()
+        self.update_waypoints_file()
         self.get_logger().info(f'Save point {name}')
 
 
-    def handle_go(self, name:str):
+    def go_to_waypoint(self, name:str):
         name = name.strip()
         if not name:
-            self.get_logger().warn('Go command without name. Use "go:<name>"')
+            self.get_logger().warning('Go command without name. Use "go_to_waypoint:<name>"')
             return
 
         if name not in self.waypoints:
-            self.get_logger().warn(f'Waypoint "{name}" not found')
+            self.get_logger().warning(f'Waypoint "{name}" not found')
             return
 
         wp = self.waypoints[name]
@@ -129,10 +124,9 @@ class PoseSaveNode (Node):
         self.goal_pub.publish(goal)
 
 
-
 def main():
     rclpy.init()
-    node = PoseSaveNode()
+    node = WaypointsControlNode()
     rclpy.spin(node)
     node.destroy_node()
 
