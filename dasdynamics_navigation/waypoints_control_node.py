@@ -18,7 +18,7 @@ class WaypointsControlNode (Node):
         self.save_waypoints_command = 'save_waypoint'
         self.go_to_waypoint_command = 'go_to_waypoint:'
 
-        self.waypoints_file_path = os.path.expanduser('~/waypoints.yaml')
+        self.waypoints_file_path = os.path.expanduser('~/SmartBox/waypoints.yaml')
         self.waypoints = self.load_waypoints()
 
         self.current_pose = None

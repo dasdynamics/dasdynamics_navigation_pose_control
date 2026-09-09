@@ -3,8 +3,8 @@
 <package format="3">
   <name>dasdynamics_navigation</name>
   <version>0.0.0</version>
-  <description>Robot navigation package.</description>
-  <maintainer email="das-dev-md@mail.ru">dmitry-savin-dev</maintainer>
+  <description>Package for launching navigation and waypoint management node</description>
+  <maintainer email="das-dev-md@mail.ru">dasdynamics</maintainer>
   <license>Apache-2.0</license>
 
   <test_depend>ament_copyright</test_depend>

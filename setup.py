@@ -22,9 +22,9 @@ setup(
     package_data={'': ['py.typed']},
     install_requires=[],
     zip_safe=False,
-    maintainer='dmitry-savin-dev',
+    maintainer='dasdynamics',
     maintainer_email='das-dev-md@mail.ru',
-    description='Launch files for navigation and a waypoint control node',
+    description='Package for launching navigation and waypoint management node',
     license='Apache-2.0',
 
     entry_points={
