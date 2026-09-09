@@ -17,7 +17,7 @@ Navigation pose control repository.
 
 Для работы пакета требуется установленный ROS 2. В данном случае используется дистрибутив **ROS 2 Lyrical**.
 
-так - же необходимо установить пакет навигации и slam:
+так - же необходимо установить пакеты навигации и slam:
 ```bash
 sudo apt install ros-lyrical-slam-toolbox
 sudo apt install ros-lyrical-twist-mux
@@ -26,7 +26,7 @@ sudo apt install ros-lyrical-nav2-planner
 sudo apt install ros-lyrical-nav2-behaviors
 sudo apt install ros-lyrical-nav2-bt-navigator
 sudo apt install ros-lyrical-nav2-lifecycle-manager
-sudo apt install ros-lyrical-nav2-regulated-pure-pursuit-controller ???
+sudo apt install ros-lyrical-nav2-regulated-pure-pursuit-controller
 sudo apt install ros-lyrical-nav2-navfn-planner
 ```
 

@@ -122,6 +122,13 @@ def generate_launch_description():
         arguments = ['-d', rviz2_config_file_path],
     )
 
+    waypoints_comtrol_node = Node(
+        package=navigation_pkg_name,
+        executable='waypoints_control_node',
+        name='waypoints_control_node',
+        output='screen',
+    )
+
 
     ld = LaunchDescription()
 
@@ -135,5 +142,7 @@ def generate_launch_description():
     ld.add_action(behavior_server_node)
     ld.add_action(bt_navigator_node)
     ld.add_action(lifecycle_manager_node)
+
+    ld.add_action(waypoints_comtrol_node)
     
     return ld
