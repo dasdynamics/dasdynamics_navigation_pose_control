@@ -43,7 +43,7 @@ class WaypointsControlNode (Node):
             10,
         )
 
-        self.get_logger().info(f'WaypointsControlNode started. Listing on {self.user_command_topic_name}')
+        self.get_logger().info(f'WaypointsControlNode started. Listening on {self.user_command_topic_name}')
 
 
     def pose_callback(self, msg:PoseWithCovarianceStamped):
